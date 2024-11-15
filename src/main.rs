@@ -1,3 +1,7 @@
+use std::os::unix::thread;
+
+use rand::{thread_rng, seq::SliceRandom};
+
 #[derive(Debug)]
 struct Deck {
     cards: Vec<String>,
@@ -16,12 +20,25 @@ impl Deck{
                 cards.push(card);
             }
         }
-
         Deck { cards }
+    }
+
+    fn shuffle(&mut self) {
+        let mut rng = thread_rng();
+        self.cards.shuffle(&mut rng);
+    }
+
+    fn deal(&mut self, num_cards: usize) -> Vec<String> {
+        self.cards.split_off(
+            self.cards.len() - num_cards
+        )
     }
 }
 
 fn main() {
-    let deck = Deck::new();
+    let mut deck = Deck::new();
+    deck.shuffle();
+    let cards = deck.deal(300);
+    println!("Here's your hand: {:#?}", cards);
     println!("Here's your deck: {:#?}", deck);
 }
